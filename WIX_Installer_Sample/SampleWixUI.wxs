@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='windows-1252'?>
+
+<?define version = "0.1.0.0" ?>
+<?define language = 1033 ?>
+<?define company_name = "ABC Soft" ?>
+<?define codename = program ?>
+<?define product_name = Program ?>
+<?define full_product_name = '$(var.company_name) $(var.product_name)' ?>
+<?define upgrade_code = eaf3891c-cd16-4239-b8bc-1b2cd7816c16 ?>
+<?define InfoURL = http://example.com/info ?>
+
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+
+  <Product Id='*' UpgradeCode='$(var.upgrade_code)' Name='$(var.full_product_name)' Language='$(var.language)' Version='$(var.version)' Manufacturer='$(var.company_name)'>
+
+    <Package Description='$(var.full_product_name)' Manufacturer='$(var.company_name)' InstallScope='perMachine' InstallerVersion='200' Compressed='yes' Comments='Version: $(var.version)'></Package>
+
+
+    <Upgrade Id='$(var.upgrade_code)'>
+
+      <UpgradeVersion OnlyDetect='no' Property='NEWPRODUCTFOUND' Minimum='$(var.version)' IncludeMinimum='no' Language='$(var.language)' />
+      <UpgradeVersion OnlyDetect='no' Property='OLDPRODUCTFOUND' Maximum='$(var.version)' IncludeMaximum='no' Language='$(var.language)' />
+      <UpgradeVersion OnlyDetect='no' Property='CURRENTPRODUCTFOUND' Minimum='$(var.version)' IncludeMinimum='yes' Maximum='$(var.version)' IncludeMaximum='yes' Language='$(var.language)' />
+    </Upgrade>
+
+
+    <!-- UI customization -->
+    <WixVariable Id="WixUIBannerBmp" Value="images\BannerTop.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="images\Dialog.bmp" />
+
+    <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
+    <Icon Id="Icon.exe" SourceFile="images\app.ico" />
+    <!-- Set properties for add/remove programs -->
+    <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+    <Property Id="ARPHELPLINK" Value="$(var.InfoURL)" />
+    <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" /> <!-- Remove repair -->
+    <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" /> <!-- Remove modify -->
+
+    <Media Id='1' Cabinet='$(var.codename).cab' EmbedCab='yes'></Media>
+
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFiles'>
+        <Directory Id='Acme' Name='Acme'>
+          <Directory Id='INSTALLDIR' Name='Foobar 1.0'>
+
+            <Component Id='MainExecutable' Guid='6decc2d5-e9c7-4cbe-9a1d-c3f1532aa6a2'>
+              <File Id='FoobarEXE' Name='FoobarAppl10.exe' DiskId='1' Source='FoobarAppl10.exe' KeyPath='yes'>
+                <Shortcut Id="startmenuFoobar10" Directory="ProgramMenuDir" Name="Foobar 1.0" WorkingDirectory='INSTALLDIR' Icon="Foobar10.exe" IconIndex="0" Advertise="yes" />
+                <Shortcut Id="desktopFoobar10" Directory="DesktopFolder" Name="Foobar 1.0" WorkingDirectory='INSTALLDIR' Icon="Foobar10.exe" IconIndex="0" Advertise="yes" />
+              </File>
+            </Component>
+
+            <Component Id='HelperLibrary' Guid='14063e35-d8f4-4251-85e6-2af5078d53a6'>
+              <File Id='HelperDLL' Name='Helper.dll' DiskId='1' Source='Helper.dll' KeyPath='yes' />
+            </Component>
+
+            <Component Id='Manual' Guid='d0bdb9fb-9ee0-4ce9-a7db-5f40406397de'>
+              <File Id='Manual' Name='Manual.pdf' DiskId='1' Source='Manual.pdf' KeyPath='yes'>
+                <Shortcut Id="startmenuManual" Directory="ProgramMenuDir" Name="Instruction Manual" Advertise="yes" />
+              </File>
+            </Component>
+
+          </Directory>
+        </Directory>
+      </Directory>
+
+      <Directory Id="ProgramMenuFolder" Name="Programs">
+        <Directory Id="ProgramMenuDir" Name="Foobar 1.0">
+          <Component Id="ProgramMenuDir" Guid="0e709361-922a-489f-96ac-7c556f173a82">
+            <RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+            <RegistryValue Root='HKCU' Key='Software\[Manufacturer]\[ProductName]' Type='string' Value='' KeyPath='yes' />
+          </Component>
+        </Directory>
+      </Directory>
+
+      <Directory Id="DesktopFolder" Name="Desktop" />
+    </Directory>
+
+    <Feature Id='Complete' Title='Foobar 1.0' Description='The complete package.' Display='expand' Level='1' ConfigurableDirectory='INSTALLDIR'>
+      <Feature Id='MainProgram' Title='Program' Description='The main executable.' Level='1'>
+        <ComponentRef Id='MainExecutable' />
+        <ComponentRef Id='HelperLibrary' />
+        <ComponentRef Id='ProgramMenuDir' />
+      </Feature>
+
+      <Feature Id='Documentation' Title='Description' Description='The instruction manual.' Level='1000'>
+        <ComponentRef Id='Manual' />
+      </Feature>
+
+    </Feature>
+
+
+    <UIRef Id="WixUI_Mondo" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+
+    <Icon Id="Foobar10.exe" SourceFile="FoobarAppl10.exe" />
+
+    <InstallExecuteSequence>
+      <RemoveExistingProducts After="InstallFinalize" />
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>

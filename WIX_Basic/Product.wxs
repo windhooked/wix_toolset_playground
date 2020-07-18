@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?define version = "0.1.0.0" ?>
+<?define language = 1033 ?>
+<?define company_name = "ABC Soft" ?>
+<?define codename = program ?>
+<?define product_name = Program ?>
+<?define full_product_name = '$(var.company_name) $(var.product_name)' ?>
+<?define upgrade_code = eaf3891c-cd16-4239-b8bc-1b2cd7816c16 ?>
+<?define InfoURL = http://example.com/info ?>
+
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+    <Product Id='*' UpgradeCode='$(var.upgrade_code)' Name='$(var.full_product_name)' Language='$(var.language)' Version='$(var.version)' Manufacturer='$(var.company_name)'>
+
+        <Package Description='$(var.full_product_name)' Manufacturer='$(var.company_name)' InstallScope='perMachine' InstallerVersion='200' Compressed='yes' Comments='Version: $(var.version)'></Package>
+
+        <!-- UI customization -->
+        <WixVariable Id="WixUIBannerBmp" Value="images\BannerTop.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="images\Dialog.bmp" />
+        <!-- Define icons (ID should not be longer than 18 chars and must end with ".exe") -->
+        <Icon Id="Icon.exe" SourceFile="images\app.ico" />
+        <!-- Set properties for add/remove programs -->
+        <Property Id="ARPPRODUCTICON" Value="Icon.exe" />
+        <Property Id="ARPHELPLINK" Value="$(var.InfoURL)" />
+        <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" /> <!-- Remove repair -->
+        <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" /> <!-- Remove modify -->
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate EmbedCab="yes" />
+
+        <Feature Id="ProductFeature" Title="The main feature" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+
+        <UIRef Id="WixUI_Mondo" />
+        <UIRef Id="WixUI_ErrorProgressText" />
+    </Product>
+
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder">
+                <Directory Id="INSTALLFOLDER" Name="My Software" />
+            </Directory>
+        </Directory>
+    </Fragment>
+
+    <Fragment>
+        <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+            <Component Id="cmpMyTextFileTXT" Guid="{A4540658-09B6-46DA-8880-0B1962E06642}">
+                <File Source="MyTextFile.txt" />
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+    <Fragment>
+        <Binary Id="IisScript_CA" SourceFile="CustomActions.js" />
+
+        <CustomAction Id="CA.MyCustomAction" BinaryKey="IisScript_CA" JScriptCall="MyCustomActionInJavascript_CA" Execute="immediate" Return="check" />
+    </Fragment>
+
+    <Fragment>
+        <PackageGroup Id="Netfx4Full">
+            <ExePackage Id="Netfx4Full" Name="Remote File" Cache="no" Compressed="no" PerMachine="yes" Permanent="yes" Vital="yes" DownloadUrl="http://go.microsoft.com/fwlink/?LinkId=164193/dotNetFx40_Full_x86_x64.exe">
+
+                <RemotePayload ProductName="dotNetFx40_Full_x86_x64.exe" Hash="123" Description="Dotnet 4.0" Size="3961856" Version="4.0.5022.0" />
+            </ExePackage>
+        </PackageGroup>
+    </Fragment>
+</Wix>
