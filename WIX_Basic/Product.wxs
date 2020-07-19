@@ -25,6 +25,13 @@
         <Property Id="ARPNOMODIFY" Value="yes" Secure="yes" /> <!-- Remove modify -->
 
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+        <InstallExecuteSequence>
+            <RemoveExistingProducts Before="InstallInitialize" />
+            <Custom Action="InstallTPG_API" After="InstallFinalize" />
+            <Custom Action="StartTPG_API" After="InstallTPG_API" />
+        </InstallExecuteSequence>
+
         <MediaTemplate EmbedCab="yes" />
 
         <Feature Id="ProductFeature" Title="The main feature" Level="1">
@@ -55,7 +62,15 @@
         <Binary Id="IisScript_CA" SourceFile="CustomActions.js" />
 
         <CustomAction Id="CA.MyCustomAction" BinaryKey="IisScript_CA" JScriptCall="MyCustomActionInJavascript_CA" Execute="immediate" Return="check" />
+
     </Fragment>
+
+    <Fragment>
+        <!-- After files are finished installing, intall and start the TPG_API service-->
+        <CustomAction Id="InstallTPG_API" Directory="TPG_API_INSTALLFOLDER" ExeCommand="[SystemFolder]cmd.exe /c nssm install TPG_API " C:\Program Files (x86)\Foxpaw\TPG_Foxpaw\TPG_API\TPG_API.exe"" Execute="immediate" Return="ignore" />
+        <CustomAction Id="StartTPG_API" Directory="TARGETDIR" ExeCommand="[SystemFolder]cmd.exe /c net start TPG_API" />
+    </Fragment>
+
 
     <Fragment>
         <PackageGroup Id="Netfx4Full">

@@ -18,6 +18,10 @@ https://github.com/deepak-rathi/Wix-Setup-Samples
 
 https://wixtoolset.org/documentation/manual/v3/overview/insignia.html
 
+https://github.com/auth0/nodejs-msi
+
+https://github.com/saltstack/salt-windows-msi
+
 Puts an executable and a config file in %ProgramFiles%
 
 Installs and starts a Windows system service
